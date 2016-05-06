@@ -1,0 +1,24 @@
+{
+  "name": "@quarterto/bae",
+  "version": "1.0.0",
+  "description": "",
+  "bin": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quarterto/bae.git"
+  },
+  "keywords": [],
+  "author": "Matt Brennan <matt@153.io> (http://blog.153.io/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/quarterto/bae/issues"
+  },
+  "homepage": "https://github.com/quarterto/bae#readme",
+  "dependencies": {
+    "find-parent-dir": "^0.3.0",
+    "minimist": "^1.2.0"
+  }
+}
