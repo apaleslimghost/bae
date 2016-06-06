@@ -15,6 +15,13 @@ function npmInstall(packages, dev) {
 	});
 }
 
+function npmRemove(packages, dev) {
+	cp.spawnSync('npm', ['remove', dev ? '-D' : '-S'].concat(packages), {
+		stdio: 'inherit',
+		cwd: projDir,
+	});
+}
+
 function uniq(arr) {
 	return Array.from(new Set(arr));
 }
@@ -25,27 +32,36 @@ if(fs.existsSync(rcPath)) {
 	rc = JSON.parse(fs.readFileSync(rcPath, 'utf-8'));
 }
 
-var argv = require('minimist')(process.argv.slice(2));
+var argv = require('minimist')(process.argv.slice(2), {boolean: ['r', 'remove']});
 
 var plugins = [].concat(argv.plugin || []).concat(argv.p || []);
 var presets = [].concat(argv.preset || []).concat(argv.s || []);
+var remove = argv.r || argv.remove;
 
-rc.plugins = uniq([].concat(rc.plugins || []).concat(plugins));
-rc.presets = uniq([].concat(rc.presets || []).concat(presets));
+if(remove) {
+	rc.plugins = rc.plugins.filter(plugin => plugins.indexOf(plugin) === -1);
+	rc.presets = rc.presets.filter(preset => presets.indexOf(preset) === -1);
+} else {
+	rc.plugins = uniq([].concat(rc.plugins || []).concat(plugins));
+	rc.presets = uniq([].concat(rc.presets || []).concat(presets));
+}
+
+var doTheThing = remove ? npmRemove : npmInstall;
+var thingToDo = remove ? 'removing' : 'installing';
 
 if(plugins.length) {
-	console.log('installing plugins ' + plugins.join(', '));
-	npmInstall(plugins.map(p => 'babel-plugin-'+p), true);
+	console.log(thingToDo + ' plugins ' + plugins.join(', '));
+	doTheThing(plugins.map(p => 'babel-plugin-'+p), true);
 }
 
 if(presets.length) {
-	console.log('installing presets ' + presets.join(', '));
-	npmInstall(presets.map(p => 'babel-preset-'+p), true);
+	console.log(thingToDo + ' presets ' + presets.join(', '));
+	doTheThing(presets.map(p => 'babel-preset-'+p), true);
 }
 
 if(plugins.indexOf('transform-runtime') >= 0) {
-	console.log('transform-runtime requested, installing runtime');
-	npmInstall(['babel-runtime'], false);
+	console.log('transform-runtime requested, ' + thingToDo + ' runtime');
+	doTheThing(['babel-runtime'], false);
 }
 
 console.log('writing babelrc');
