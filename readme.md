@@ -18,6 +18,8 @@ installs the packages as devdeps and adds them to babelrc. if babelrc isn't ther
 
 if transform-runtime is requested, also installs `babel-runtime` as a production dep.
 
+if you pass in `-r` or `--remove`, the plugins are removed instead of installed
+
 licence
 -------
 
